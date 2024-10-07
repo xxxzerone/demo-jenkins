@@ -39,9 +39,9 @@ pipeline {
         stage('Gradle Build') {
             steps {
                 sh 'chmod +x ./gradlew'
-                sh './gradlew bootJar --no-daemon'
-                sh 'cp build/libs/*.jar CICD/'
-                sh 'ls -l CICD/'
+                sh './gradlew clean build --no-daemon'
+                sh 'cp build/libs/*.jar cicd/'
+                sh 'ls -l cicd/'
             }
         }
 
@@ -49,12 +49,11 @@ pipeline {
             steps {
                 echo "DOCKER_HUB_URL: ${DOCKER_HUB_URL}"
                 echo "DOCKER_HUB_CREDENTIAL: ${DOCKER_HUB_CREDENTIAL}"
-                echo "BUILD_NUMBER: ${BUILD_NUMBER}"
 
                 script {
-                    docker.withRegistry("https://${DOCKER_HUB_URL}", "${DOCKER_HUB_CREDENTIAL}") {
-                        dir('CICD') {
-                            def image = docker.build("demo-jenkins-${env.BUILD_NUMBER}")
+                    docker.withRegistry("${DOCKER_HUB_URL}", "${DOCKER_HUB_CREDENTIAL}") {
+                        dir('cicd') {
+                            def image = docker.build("demo-jenkins:${env.BUILD_NUMBER}")
                             image.push()
                         }
                     }
