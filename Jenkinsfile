@@ -48,10 +48,11 @@ pipeline {
         stage('Docker Image Build and Push') {
             steps {
                 script {
-                    docker.withRegistry("https://docker.io", "${DOCKER_HUB_CREDENTIAL}") {
+                    docker.withRegistry("https://registry.hub.docker.com", 'dockerhub-jenkins') {
                         dir('cicd') {
-                            def image = docker.build("demo-jenkins:${env.BUILD_NUMBER}")
-                            image.push()
+                            def image = docker.build('demo-jenkins')
+                            image.push("${env.BUILD_NUMBER}")
+                            image.push("latest")
                         }
                     }
                 }
