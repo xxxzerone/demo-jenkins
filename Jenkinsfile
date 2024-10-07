@@ -47,11 +47,8 @@ pipeline {
 
         stage('Docker Image Build and Push') {
             steps {
-                echo "DOCKER_HUB_URL: ${DOCKER_HUB_URL}"
-                echo "DOCKER_HUB_CREDENTIAL: ${DOCKER_HUB_CREDENTIAL}"
-
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', "${DOCKER_HUB_CREDENTIAL}") {
+                    docker.withRegistry("https://docker.io", "${DOCKER_HUB_CREDENTIAL}") {
                         dir('cicd') {
                             def image = docker.build("demo-jenkins:${env.BUILD_NUMBER}")
                             image.push()
