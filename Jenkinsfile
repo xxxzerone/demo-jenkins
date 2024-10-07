@@ -38,15 +38,9 @@ pipeline {
 
         stage('Gradle Build') {
             steps {
-                sh 'chmod +x ./gradlew'
-                sh './gradlew bootJar --no-daemon'
-                sh 'cp build/libs/*.jar ./demo-jenkins:${env.BUILD_NUMBER}.jar'
-            }
-        }
-
-        stage('Docker Hub Login') {
-            steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh "chmod +x ./gradlew"
+                sh "./gradlew bootJar --no-daemon"
+                sh "cp build/libs/*.jar ./demo-jenkins:${env.BUILD_NUMBER}.jar"
             }
         }
 
