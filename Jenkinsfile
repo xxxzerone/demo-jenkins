@@ -2,13 +2,27 @@ pipeline {
     agent any
 
     tools {
-        gradle 'gradle'
+        gradle 'Gradle_8.10'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Check for Changes') {
             steps {
-                git 'https://github.com/xxxzerone/demo-jenkins.git'
+                // 현재 커밋 해시 가져오기
+                def currentCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+
+                // 이전 빌드의 커밋 해시 가져오기 (없으면 빈 문자열)
+                def previousCommit = sh(script: 'git rev-parse HEAD~1 || echo ""', returnStdout: true).trim()
+
+                def changes = sh(script: "git diff --name-only ${previousCommit} ${currentCommit} -- service/admin-service", returnStdout: true).trim()
+                if (changes) {
+                    echo '변동사항이 있습니다.'
+                    echo "변경된 파일들: ${changes}"
+                } else {
+                    echo '변동사항이 없습니다.'
+                    currentBuild.result = 'ABORTED'
+                    error '변동 사항이 없으므로 파이프라인을 중단합니다.'
+                }
             }
         }
         stage('Build'){
