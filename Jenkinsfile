@@ -46,6 +46,10 @@ pipeline {
 
         stage('Docker image build and push') {
             steps {
+                echo "DOCKER_HUB_URL: ${DOCKER_HUB_URL}"
+                echo "DOCKER_HUB_CREDENTIAL: ${DOCKER_HUB_CREDENTIAL}"
+                echo "BUILD_NUMBER: ${BUILD_NUMBER}"
+
                 script {
                     docker.withRegistry("http://${DOCKER_HUB_URL}", "${DOCKER_HUB_CREDENTIAL}") {
                         // Docker 이미지 빌드
