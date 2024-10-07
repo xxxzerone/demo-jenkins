@@ -45,6 +45,12 @@ pipeline {
             }
         }
 
+        stage('Login') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' // docker hub 로그인
+            }
+        }
+
         stage('Docker Image Build and Push') {
             steps {
                 echo "DOCKER_HUB_URL: ${DOCKER_HUB_URL}"
