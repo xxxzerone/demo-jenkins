@@ -11,6 +11,7 @@ public class HomeController {
     @GetMapping("/")
     public String index() {
         log.info("HomeController index");
+        log.info("indexindexindex");
         return "index";
     }
 

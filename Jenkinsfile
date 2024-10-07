@@ -17,7 +17,7 @@ pipeline {
                     def previousCommit = sh(script: 'git rev-parse HEAD~1 || echo ""', returnStdout: true).trim()
                     echo "previousCommit: ${previousCommit}"
 
-                    def changes = sh(script: "git diff --name-only ${previousCommit} ${currentCommit} -- service/admin-service", returnStdout: true).trim()
+                    def changes = sh(script: "git diff --name-only ${previousCommit} ${currentCommit}", returnStdout: true).trim()
                     echo "changes: ${changes}"
                     if (changes) {
                         echo '변동사항이 있습니다.'
