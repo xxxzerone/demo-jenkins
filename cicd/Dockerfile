@@ -1,8 +1,8 @@
 FROM openjdk:24-ea-17-jdk-slim
-VOLUME /tmp
-ADD ./build/libs/*.jar demo-jenkins.jar
 
-ENTRYPOINT ["java", "-jar","/demo-jenkins.jar"]
+COPY *.jar /app.jar
+
+ENTRYPOINT ["java", "-jar", "/app.jar"]
 
 # bellsoft 의 openjre17을 사용하여 가벼운 이미지 생성
 #FROM bellsoft/liberica-openjre-alpine:17
