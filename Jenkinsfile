@@ -11,11 +11,14 @@ pipeline {
                 script {
                     // 현재 커밋 해시 가져오기
                     def currentCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+                    echo "currentCommit: ${currentCommit}"
 
                     // 이전 빌드의 커밋 해시 가져오기 (없으면 빈 문자열)
                     def previousCommit = sh(script: 'git rev-parse HEAD~1 || echo ""', returnStdout: true).trim()
+                    echo "previousCommit: ${previousCommit}"
 
                     def changes = sh(script: "git diff --name-only ${previousCommit} ${currentCommit} -- service/admin-service", returnStdout: true).trim()
+                    echo "changes: ${changes}"
                     if (changes) {
                         echo '변동사항이 있습니다.'
                         echo "변경된 파일들: ${changes}"
