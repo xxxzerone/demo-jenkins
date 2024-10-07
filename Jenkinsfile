@@ -1,12 +1,17 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_HUB_URL = "${params.docker_hub_url}"
+        DOCKER_HUB_CREDENTIAL = "${params.docker_hub_credential}"
+    }
+
     tools {
         gradle 'Gradle_8.10'
     }
 
     stages {
-        stage('Check for Changes') {
+        stage('Check for changes') {
             steps {
                 script {
                     // 현재 커밋 해시 가져오기
@@ -30,22 +35,36 @@ pipeline {
                 }
             }
         }
-        stage('Build'){
-            steps{
-                echo 'Building..'
-                sh 'gradle clean build'
+
+        stage('Gradle build') {
+            steps {
+                sh 'chmod +x ./gradlew'
+                sh './gradlew bootJar --no-daemon'
+                sh 'cp build/libs/*.jar ./'
+            }
+        }
+
+        stage('Docker image build and push') {
+            steps {
+                script {
+                    docker.withRegistry("http://${DOCKER_HUB_URL}", "${DOCKER_HUB_CREDENTIAL}") {
+                        // Docker 이미지 빌드
+                        def image = docker.build("demo-jenkins:${env.BUILD_NUMBER}")
+                        image.push()
+                    }
+                }
             }
         }
     }
     post{
-        always{
-            echo "========always========"
-        }
         success{
             echo "========pipeline executed successfully ========"
         }
         failure{
             echo "========pipeline execution failed========"
+        }
+        always{
+            echo "========always========"
         }
     }
 }
