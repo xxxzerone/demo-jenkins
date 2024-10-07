@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_URL = "${params.docker_hub_url}"
-        DOCKER_HUB_CREDENTIAL = "${params.docker_hub_credential}"
+        DOCKER_HUB_CREDENTIAL = credentials('dockerhub-jenkins')
     }
 
     tools {
@@ -11,7 +11,7 @@ pipeline {
     }
 
     stages {
-        stage('Check for changes') {
+        stage('Check for Changes') {
             steps {
                 script {
                     // 현재 커밋 해시 가져오기
@@ -36,23 +36,28 @@ pipeline {
             }
         }
 
-        stage('Gradle build') {
+        stage('Gradle Build') {
             steps {
                 sh 'chmod +x ./gradlew'
                 sh './gradlew bootJar --no-daemon'
-                sh 'cp build/libs/*.jar ./'
+                sh 'cp build/libs/*.jar ./demo-jenkins:${env.BUILD_NUMBER}.jar'
             }
         }
 
-        stage('Docker image build and push') {
+        stage('Docker Hub Login') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+
+        stage('Docker Image Build and Push') {
             steps {
                 echo "DOCKER_HUB_URL: ${DOCKER_HUB_URL}"
                 echo "DOCKER_HUB_CREDENTIAL: ${DOCKER_HUB_CREDENTIAL}"
                 echo "BUILD_NUMBER: ${BUILD_NUMBER}"
 
                 script {
-                    docker.withRegistry("http://${DOCKER_HUB_URL}", "${DOCKER_HUB_CREDENTIAL}") {
-                        // Docker 이미지 빌드
+                    docker.withRegistry("https://${DOCKER_HUB_URL}", "${DOCKER_HUB_CREDENTIAL}") {
                         def image = docker.build("demo-jenkins:${env.BUILD_NUMBER}")
                         image.push()
                     }
