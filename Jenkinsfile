@@ -61,7 +61,7 @@ pipeline {
     post{
         success{
             echo "========pipeline executed successfully ========"
-
+            echo "Image 정리..."
         }
         failure{
             echo "========pipeline execution failed========"
