@@ -61,13 +61,15 @@ pipeline {
     post{
         success{
             echo "========pipeline executed successfully ========"
+            script {
+                sh "docker rmi testxxboy/demo-jenkins:${env.BUILD_NUMBER}"
+            }
         }
         failure{
             echo "========pipeline execution failed========"
         }
         always{
             echo 'Workspace 정리..'
-            deleteDir()
         }
     }
 }
