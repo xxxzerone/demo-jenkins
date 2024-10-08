@@ -14,6 +14,9 @@ pipeline {
         stage('Check for Changes') {
             steps {
                 script {
+                    echo "${params.docker_hub_url}"
+                    echo "${DOCKER_HUB_CREDENTIAL}"
+                    echo "${DOCKER_HUB_URL}"
                     // 현재 커밋 해시 가져오기
                     def currentCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
                     echo "currentCommit: ${currentCommit}"
@@ -48,9 +51,7 @@ pipeline {
         stage('Docker Image Build and Push') {
             steps {
                 script {
-                    echo "${DOCKER_HUB_CREDENTIAL}"
-                    echo "${DOCKER_HUB_URL}"
-                    docker.withRegistry('', "${DOCKER_HUB_CREDENTIAL}") {
+                    docker.withRegistry('', '$DOCKER_HUB_CREDENTIAL') {
                         dir('cicd') {
                             def image = docker.build("${DOCKER_HUB_URL}:${env.BUILD_NUMBER}")
                             image.push()
