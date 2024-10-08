@@ -48,9 +48,9 @@ pipeline {
         stage('Docker Image Build and Push') {
             steps {
                 script {
-                    docker.withRegistry("https://registry.hub.docker.com", 'dockerhub-jenkins') {
+                    docker.withRegistry('', 'dockerhub-jenkins') {
                         dir('cicd') {
-                            def image = docker.build('testxxboy/demo-jenkins:latest')
+                            def image = docker.build("testxxboy/demo-jenkins:${env.BUILD_NUMBER}")
                             image.push()
                         }
                     }
@@ -61,12 +61,16 @@ pipeline {
     post{
         success{
             echo "========pipeline executed successfully ========"
+            script {
+                sh "docker rmi testxxboy/demo-jenkins:${env.BUILD_NUMBER}"
+            }
         }
         failure{
             echo "========pipeline execution failed========"
         }
         always{
-            echo "========always========"
+            echo 'Workspace 정리..'
+            deleteDir()
         }
     }
 }
