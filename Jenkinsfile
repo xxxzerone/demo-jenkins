@@ -50,7 +50,7 @@ pipeline {
                 script {
                     docker.withRegistry("https://registry.hub.docker.com", 'dockerhub-jenkins') {
                         dir('cicd') {
-                            def image = docker.build('testxxboy/demo-jenkins:${env.BUILD_NUMBER}')
+                            def image = docker.build('testxxboy/demo-jenkins:latest')
                             image.push()
                         }
                     }
