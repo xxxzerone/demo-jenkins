@@ -48,6 +48,8 @@ pipeline {
         stage('Docker Image Build and Push') {
             steps {
                 script {
+                    echo "${DOCKER_HUB_CREDENTIAL}"
+                    echo "${DOCKER_HUB_URL}"
                     docker.withRegistry('', "${DOCKER_HUB_CREDENTIAL}") {
                         dir('cicd') {
                             def image = docker.build("${DOCKER_HUB_URL}:${env.BUILD_NUMBER}")
